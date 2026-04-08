@@ -194,19 +194,19 @@ proxies:
     port: 31085
     skip-cert-verify: true
 
-  - name: {{ q .NodeName }}
+  - name: "测试节点 \"A\""
     type: vless
-    server: {{ .Domain }}          # ←←← 改成你解析的子域名（或直接填 VPS IP）
-    port: {{ .Port }}
-    uuid: {{ q .UUID }}                   # ←←← 改成服务端生成的 UUID
+    server: xx.example.com          # ←←← 改成你解析的子域名（或直接填 VPS IP）
+    port: 443
+    uuid: "12345678-1234-1234-1234-1234567890ab"                   # ←←← 改成服务端生成的 UUID
     network: tcp
     udp: true
     tls: true
     flow: xtls-rprx-vision
-    servername: {{ .DestHost }}     # ←←← 和服务端 dest 保持一致
+    servername: www.microsoft.com     # ←←← 和服务端 dest 保持一致
     reality-opts:
-      public-key: {{ q .PublicKey }}     # ←←← 改成服务端 xray x25519 生成的 PublicKey
-      short-id: {{ q .ShortID }}   # ←←← 和服务端 shortIds 保持一致
+      public-key: "public-key"     # ←←← 改成服务端 xray x25519 生成的 PublicKey
+      short-id: "0123456789abcdef"   # ←←← 和服务端 shortIds 保持一致
     skip-cert-verify: false
 
 # 策略组
