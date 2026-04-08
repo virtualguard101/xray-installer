@@ -1,0 +1,39 @@
+{
+  "log": {
+    "loglevel": "warning"
+  },
+  "inbounds": [
+    {
+      "tag": "vless-reality",
+      "port": {{ .Port }},
+      "protocol": "vless",
+      "settings": {
+        "clients": [
+          {
+            "id": {{ q .UUID }},
+            "flow": "xtls-rprx-vision"
+          }
+        ],
+        "decryption": "none"
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "reality",
+        "realitySettings": {
+          "show": false,
+          "dest": {{ q (printf "%s:443" .DestHost) }},
+          "xver": 0,
+          "serverNames": [{{ q .DestHost }}],
+          "privateKey": {{ q .PrivateKey }},
+          "shortIds": [{{ q .ShortID }}]
+        }
+      }
+    }
+  ],
+  "outbounds": [
+    {
+      "tag": "direct",
+      "protocol": "freedom"
+    }
+  ]
+}
