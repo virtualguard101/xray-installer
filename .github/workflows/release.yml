@@ -89,6 +89,60 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          gh release create "${GITHUB_REF_NAME}" dist/* \
-            --title "${GITHUB_REF_NAME}" \
-            --generate-notes
+          RELEASE_PAYLOAD="$(python - <<'PY'
+          import json, os
+          print(json.dumps({
+              "tag_name": os.environ["GITHUB_REF_NAME"],
+              "name": os.environ["GITHUB_REF_NAME"],
+              "generate_release_notes": True,
+          }))
+          PY
+          )"
+
+          RESPONSE_FILE="$(mktemp)"
+          STATUS_CODE="$(
+            curl -sS -o "${RESPONSE_FILE}" -w "%{http_code}" \
+              -X POST \
+              -H "Authorization: Bearer ${GH_TOKEN}" \
+              -H "Accept: application/vnd.github+json" \
+              -H "Content-Type: application/json" \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/releases" \
+              -d "${RELEASE_PAYLOAD}"
+          )"
+
+          case "${STATUS_CODE}" in
+            201)
+              ;;
+            422)
+              curl -fsSL \
+                -H "Authorization: Bearer ${GH_TOKEN}" \
+                -H "Accept: application/vnd.github+json" \
+                "https://api.github.com/repos/${GITHUB_REPOSITORY}/releases/tags/${GITHUB_REF_NAME}" \
+                -o "${RESPONSE_FILE}"
+              ;;
+            *)
+              echo "Create release failed with status ${STATUS_CODE}" >&2
+              cat "${RESPONSE_FILE}" >&2
+              exit 1
+              ;;
+          esac
+
+          UPLOAD_URL="$(
+            python - "${RESPONSE_FILE}" <<'PY'
+          import json, sys
+          with open(sys.argv[1], 'r', encoding='utf-8') as fh:
+              data = json.load(fh)
+          print(data["upload_url"].split("{", 1)[0])
+          PY
+          )"
+
+          for file in dist/*; do
+            name="$(basename "${file}")"
+            curl -fsSL \
+              -X POST \
+              -H "Authorization: Bearer ${GH_TOKEN}" \
+              -H "Accept: application/vnd.github+json" \
+              -H "Content-Type: application/octet-stream" \
+              --data-binary "@${file}" \
+              "${UPLOAD_URL}?name=${name}" >/dev/null
+          done
