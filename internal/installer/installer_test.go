@@ -2,6 +2,8 @@ package installer
 
 import (
 	"bytes"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 )
@@ -70,5 +72,23 @@ func TestPrintDryRunSummaryIncludesFlClashCommandHint(t *testing.T) {
 
 	if !strings.Contains(stdout.String(), "sudo cat "+proxyConfigPath) {
 		t.Fatalf("dry-run summary missing flclash fetch command hint: %q", stdout.String())
+	}
+}
+
+func TestWriteFileAtomicUsesRequestedMode(t *testing.T) {
+	t.Parallel()
+
+	dir := t.TempDir()
+	target := filepath.Join(dir, "config.json")
+	if err := writeFileAtomic(target, []byte(`{"ok":true}`), xrayConfigMode); err != nil {
+		t.Fatalf("writeFileAtomic returned error: %v", err)
+	}
+
+	info, err := os.Stat(target)
+	if err != nil {
+		t.Fatalf("stat target: %v", err)
+	}
+	if got := info.Mode().Perm(); got != xrayConfigMode {
+		t.Fatalf("file mode = %o, want %o", got, xrayConfigMode)
 	}
 }

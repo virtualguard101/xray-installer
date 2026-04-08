@@ -33,6 +33,9 @@ const (
 	proxyConfigPath  = "/usr/local/etc/xray-installer/proxy.yaml"
 	metadataPath     = "/usr/local/etc/xray-installer/install-result.json"
 	installScriptURL = "https://raw.githubusercontent.com/XTLS/Xray-install/main/install-release.sh"
+
+	xrayConfigMode = 0o644
+	privateMode    = 0o600
 )
 
 var domainRE = regexp.MustCompile(`^(?i)[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+$`)
@@ -164,14 +167,14 @@ func (i *Installer) Run(ctx context.Context, req InstallRequest) (*Result, error
 	if _, err := backupIfExists(xrayConfigPath); err != nil {
 		return nil, err
 	}
-	if err := writeFileAtomic(xrayConfigPath, xrayConfig, 0o600); err != nil {
+	if err := writeFileAtomic(xrayConfigPath, xrayConfig, xrayConfigMode); err != nil {
 		return nil, fmt.Errorf("write xray config: %w", err)
 	}
 
 	if _, err := backupIfExists(proxyConfigPath); err != nil {
 		return nil, err
 	}
-	if err := writeFileAtomic(proxyConfigPath, flClashConfig, 0o600); err != nil {
+	if err := writeFileAtomic(proxyConfigPath, flClashConfig, privateMode); err != nil {
 		return nil, fmt.Errorf("write flclash config: %w", err)
 	}
 
@@ -188,7 +191,7 @@ func (i *Installer) Run(ctx context.Context, req InstallRequest) (*Result, error
 		return nil, fmt.Errorf("marshal install result: %w", err)
 	}
 	meta = append(meta, '\n')
-	if err := writeFileAtomic(metadataPath, meta, 0o600); err != nil {
+	if err := writeFileAtomic(metadataPath, meta, privateMode); err != nil {
 		return nil, fmt.Errorf("write install result: %w", err)
 	}
 
