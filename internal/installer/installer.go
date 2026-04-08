@@ -395,6 +395,7 @@ func (i *Installer) printSummary(result *Result) {
 	fmt.Fprintf(i.stdout, "- xray config: %s\n", result.XrayConfigPath)
 	fmt.Fprintf(i.stdout, "- flclash config: %s\n", result.ProxyConfigPath)
 	fmt.Fprintf(i.stdout, "- install record: %s\n", metadataPath)
+	fmt.Fprintf(i.stdout, "\n获取 FlClash 配置命令：\n  sudo cat %s\n", result.ProxyConfigPath)
 }
 
 func (i *Installer) printDryRunSummary(result *Result) {
@@ -405,6 +406,7 @@ func (i *Installer) printDryRunSummary(result *Result) {
 	fmt.Fprintf(i.stdout, "- would write xray config to: %s\n", result.XrayConfigPath)
 	fmt.Fprintf(i.stdout, "- would write flclash config to: %s\n", result.ProxyConfigPath)
 	fmt.Fprintf(i.stdout, "- would save install record to: %s\n", metadataPath)
+	fmt.Fprintf(i.stdout, "\n实际安装完成后可用以下命令获取 FlClash 配置：\n  sudo cat %s\n", result.ProxyConfigPath)
 }
 
 func normalizeDomain(input string) (string, error) {
