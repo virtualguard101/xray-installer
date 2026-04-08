@@ -35,6 +35,12 @@ need_cmd() {
   command -v "$1" >/dev/null 2>&1 || fail "missing required command: $1"
 }
 
+find_checksum_line() {
+  local checksums_file="$1"
+  local asset_name="$2"
+  awk -v name="$asset_name" '$2 == name || $2 == "./" name {print; exit}' "$checksums_file"
+}
+
 detect_os() {
   local os
   os="$(uname -s)"
@@ -89,7 +95,7 @@ install_binary() {
   asset_url="${release_base}/${asset_name}"
 
   tmpdir="$(mktemp -d)"
-  trap 'rm -rf "$tmpdir"' EXIT
+  trap "rm -rf -- $(printf '%q' "$tmpdir")" EXIT
 
   log "==> Downloading ${asset_name}"
   if ! curl -fsSL "${asset_url}" -o "${tmpdir}/${asset_name}"; then
@@ -98,11 +104,18 @@ install_binary() {
 
   log "==> Verifying checksum"
   if curl -fsSL "${checksum_url}" -o "${tmpdir}/checksums.txt"; then
+    local checksum_line
+    checksum_line="$(find_checksum_line "${tmpdir}/checksums.txt" "${asset_name}")"
+    [[ -n "${checksum_line}" ]] || fail "checksum entry not found for ${asset_name}"
+
     if command -v sha256sum >/dev/null 2>&1; then
-      (cd "$tmpdir" && grep " ${asset_name}\$" checksums.txt | sha256sum -c -) >/dev/null
+      (
+        cd "$tmpdir"
+        printf '%s\n' "${checksum_line}" | sha256sum -c -
+      ) >/dev/null
     elif command -v shasum >/dev/null 2>&1; then
       local expected actual
-      expected="$(grep " ${asset_name}\$" "${tmpdir}/checksums.txt" | awk '{print $1}')"
+      expected="$(printf '%s\n' "${checksum_line}" | awk '{print $1}')"
       actual="$(shasum -a 256 "${tmpdir}/${asset_name}" | awk '{print $1}')"
       [[ -n "$expected" && "$expected" == "$actual" ]] || fail "checksum verification failed for ${asset_name}"
     else

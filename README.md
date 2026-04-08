@@ -101,6 +101,6 @@ go build ./cmd/xray-installer
 
 ## 参考
 
-- 文章：<https://manateelazycat.github.io/2026/04/08/best-proxy/>
+- 文章：<https://manateelazycat.github.io/2026/04/09/best-proxy/>
 - Xray 安装脚本：<https://github.com/XTLS/Xray-install>
 - Xray 命令文档：<https://xtls.github.io/document/command>
