@@ -8,6 +8,32 @@
 
 然后自动继续安装。
 
+## 一键安装并立即执行
+
+> `install.sh` 会从 GitHub Releases 下载预编译二进制，因此仓库需要先发布一个 tag/release。
+
+```bash
+bash <(curl -fsSL https://raw.githubusercontent.com/manateelazycat/xray-installer/main/install.sh) install
+```
+
+仅安装，不立即运行：
+
+```bash
+bash <(curl -fsSL https://raw.githubusercontent.com/manateelazycat/xray-installer/main/install.sh) install --no-run
+```
+
+安装后以 dry-run 方式立刻启动：
+
+```bash
+bash <(curl -fsSL https://raw.githubusercontent.com/manateelazycat/xray-installer/main/install.sh) install -- --dry-run
+```
+
+一键卸载：
+
+```bash
+bash <(curl -fsSL https://raw.githubusercontent.com/manateelazycat/xray-installer/main/install.sh) uninstall
+```
+
 ```bash
 xray-installer
 ```
@@ -21,6 +47,7 @@ xray-installer
 - 生成文章同款长版 FlClash 配置 `proxy.yaml`
 - 支持 `uninstall`
 - 支持 `--dry-run`
+- 支持 GitHub Release 二进制一键安装脚本 `install.sh`
 
 ## 当前边界
 
@@ -45,6 +72,7 @@ sudo ./xray-installer
 
 ```bash
 ./xray-installer --help
+./xray-installer --version
 ```
 
 ## 卸载

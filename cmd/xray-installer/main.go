@@ -18,10 +18,17 @@ const (
 	commandUninstall = "uninstall"
 )
 
+var (
+	version   = "dev"
+	commit    = "unknown"
+	buildDate = "unknown"
+)
+
 type cliOptions struct {
 	command string
 	dryRun  bool
 	help    bool
+	version bool
 }
 
 func main() {
@@ -38,6 +45,10 @@ func run(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 
 	if options.help {
 		printUsage(stdout)
+		return 0
+	}
+	if options.version {
+		printVersion(stdout)
 		return 0
 	}
 
@@ -82,6 +93,7 @@ func parseCLI(args []string) (cliOptions, error) {
 	fs.BoolVar(&options.dryRun, "dry-run", false, "preview actions without making changes")
 	fs.BoolVar(&options.help, "help", false, "show help")
 	fs.BoolVar(&options.help, "h", false, "show help")
+	fs.BoolVar(&options.version, "version", false, "show version")
 
 	if err := fs.Parse(args); err != nil {
 		return options, err
@@ -161,6 +173,7 @@ func printUsage(w io.Writer) {
 用法:
   xray-installer [--dry-run]
   xray-installer uninstall [--dry-run]
+  xray-installer --version
   xray-installer --help
 
 说明:
@@ -173,6 +186,7 @@ func printUsage(w io.Writer) {
 
 选项:
   --dry-run    只预览，不实际安装 / 卸载 / 写文件 / 重启服务
+  --version    输出版本信息
   -h, --help   输出帮助
 
 默认节点名称:
@@ -181,6 +195,11 @@ func printUsage(w io.Writer) {
 示例:
   xray-installer
   xray-installer --dry-run
+  xray-installer --version
   sudo xray-installer uninstall
 `, installer.DefaultNodeName)
+}
+
+func printVersion(w io.Writer) {
+	fmt.Fprintf(w, "xray-installer %s\ncommit: %s\nbuild date: %s\n", version, commit, buildDate)
 }

@@ -36,6 +36,11 @@ func TestParseCLI(t *testing.T) {
 			want: cliOptions{command: commandInstall, help: true},
 		},
 		{
+			name: "version",
+			args: []string{"--version"},
+			want: cliOptions{command: commandInstall, version: true},
+		},
+		{
 			name:    "unexpected arg",
 			args:    []string{"example.com"},
 			wantErr: "unexpected arguments",
@@ -80,5 +85,29 @@ func TestPromptInstallRequest(t *testing.T) {
 	}
 	if !strings.Contains(output.String(), "请输入域名") || !strings.Contains(output.String(), "请输入 FlClash 节点名称") {
 		t.Fatalf("prompt output missing expected labels: %q", output.String())
+	}
+}
+
+func TestRunVersion(t *testing.T) {
+	t.Parallel()
+
+	oldVersion, oldCommit, oldBuildDate := version, commit, buildDate
+	version, commit, buildDate = "v1.2.3", "abc123", "2026-04-09T00:00:00Z"
+	defer func() {
+		version, commit, buildDate = oldVersion, oldCommit, oldBuildDate
+	}()
+
+	var stdout, stderr bytes.Buffer
+	code := run([]string{"--version"}, strings.NewReader(""), &stdout, &stderr)
+	if code != 0 {
+		t.Fatalf("run returned code %d, want 0", code)
+	}
+	if stderr.Len() != 0 {
+		t.Fatalf("stderr = %q, want empty", stderr.String())
+	}
+	for _, want := range []string{"xray-installer v1.2.3", "commit: abc123", "build date: 2026-04-09T00:00:00Z"} {
+		if !strings.Contains(stdout.String(), want) {
+			t.Fatalf("stdout missing %q in %q", want, stdout.String())
+		}
 	}
 }
