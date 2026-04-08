@@ -43,9 +43,8 @@ type Installer struct {
 }
 
 type InstallRequest struct {
-	Domain   string
-	NodeName string
-	DryRun   bool
+	Domain string
+	DryRun bool
 }
 
 type Result struct {
@@ -73,10 +72,7 @@ func (i *Installer) Run(ctx context.Context, req InstallRequest) (*Result, error
 		return nil, err
 	}
 
-	nodeName, err := normalizeNodeName(req.NodeName)
-	if err != nil {
-		return nil, err
-	}
+	nodeName := DefaultNodeName
 
 	i.step("运行安装前检查")
 	publicIP, err := i.preflight(ctx, !req.DryRun)
@@ -420,17 +416,6 @@ func normalizeDomain(input string) (string, error) {
 		return "", fmt.Errorf("invalid domain %q", input)
 	}
 	return domain, nil
-}
-
-func normalizeNodeName(input string) (string, error) {
-	name := strings.TrimSpace(input)
-	if name == "" {
-		return DefaultNodeName, nil
-	}
-	if strings.ContainsAny(name, "\r\n") {
-		return "", errors.New("node name cannot contain newlines")
-	}
-	return name, nil
 }
 
 func supportsDistro(id, like string) bool {

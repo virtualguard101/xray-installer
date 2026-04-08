@@ -69,7 +69,7 @@ func TestParseCLI(t *testing.T) {
 func TestPromptInstallRequest(t *testing.T) {
 	t.Parallel()
 
-	input := strings.NewReader("xx.example.com\n我的节点\n")
+	input := strings.NewReader("xx.example.com\n")
 	var output bytes.Buffer
 
 	req, err := promptInstallRequest(input, &output)
@@ -80,11 +80,11 @@ func TestPromptInstallRequest(t *testing.T) {
 	if req.Domain != "xx.example.com" {
 		t.Fatalf("Domain = %q, want xx.example.com", req.Domain)
 	}
-	if req.NodeName != "我的节点" {
-		t.Fatalf("NodeName = %q, want 我的节点", req.NodeName)
-	}
-	if !strings.Contains(output.String(), "请输入域名") || !strings.Contains(output.String(), "请输入 FlClash 节点名称") {
+	if !strings.Contains(output.String(), "请输入域名") {
 		t.Fatalf("prompt output missing expected labels: %q", output.String())
+	}
+	if strings.Contains(output.String(), "请输入 FlClash 节点名称") {
+		t.Fatalf("prompt output should not ask for node name: %q", output.String())
 	}
 }
 

@@ -4,9 +4,8 @@
 
 启动后会交互式询问：
 - 域名
-- FlClash 节点名称（默认 `[自建 1] 美国家宽-Reality`）
 
-然后自动继续安装。
+FlClash 节点名称固定为博客长模板中的 `[自建 1] 美国家宽-Reality`，然后自动继续安装。
 
 ## 一键安装并立即执行
 
@@ -101,7 +100,7 @@ go build ./cmd/xray-installer
 
 ## 参考
 
-- 文章：<https://manateelazycat.github.io/2026/04/09/best-proxy/>
+- 文章：<https://manateelazycat.github.io/2026/04/08/best-proxy/>
 - Xray 安装脚本：<https://github.com/XTLS/Xray-install>
 - Xray 命令文档：<https://xtls.github.io/document/command>
 

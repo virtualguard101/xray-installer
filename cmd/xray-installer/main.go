@@ -114,17 +114,8 @@ func promptInstallRequest(stdin io.Reader, stdout io.Writer) (installer.InstallR
 		return installer.InstallRequest{}, err
 	}
 
-	nodeName, err := promptWithDefault(reader, stdout,
-		fmt.Sprintf("请输入 FlClash 节点名称（默认 %s）", installer.DefaultNodeName),
-		installer.DefaultNodeName,
-	)
-	if err != nil {
-		return installer.InstallRequest{}, err
-	}
-
 	return installer.InstallRequest{
-		Domain:   domain,
-		NodeName: nodeName,
+		Domain: domain,
 	}, nil
 }
 
@@ -140,18 +131,6 @@ func promptRequired(reader *bufio.Reader, stdout io.Writer, label string) (strin
 		}
 		fmt.Fprintln(stdout, "输入不能为空，请重试。")
 	}
-}
-
-func promptWithDefault(reader *bufio.Reader, stdout io.Writer, label, defaultValue string) (string, error) {
-	fmt.Fprintf(stdout, "%s: ", label)
-	value, err := readLine(reader)
-	if err != nil {
-		return "", err
-	}
-	if strings.TrimSpace(value) == "" {
-		return defaultValue, nil
-	}
-	return strings.TrimSpace(value), nil
 }
 
 func readLine(reader *bufio.Reader) (string, error) {
@@ -177,9 +156,9 @@ func printUsage(w io.Writer) {
   xray-installer --help
 
 说明:
-  1. 启动安装后会先询问域名
-  2. 然后询问 FlClash 节点名称
-  3. 再自动安装 Xray、生成配置并启动服务
+  1. 启动安装后只询问域名
+  2. FlClash 节点名称固定使用博客长模板中的默认值
+  3. 然后自动安装 Xray、生成配置并启动服务
 
 命令:
   uninstall    卸载 Xray，并删除 xray-installer 生成的文件

@@ -2,26 +2,6 @@ package installer
 
 import "testing"
 
-func TestNormalizeNodeName(t *testing.T) {
-	t.Parallel()
-
-	got, err := normalizeNodeName("")
-	if err != nil {
-		t.Fatalf("normalizeNodeName returned error: %v", err)
-	}
-	if got != DefaultNodeName {
-		t.Fatalf("normalizeNodeName default = %q, want %q", got, DefaultNodeName)
-	}
-}
-
-func TestNormalizeNodeNameRejectsNewline(t *testing.T) {
-	t.Parallel()
-
-	if _, err := normalizeNodeName("bad\nname"); err == nil {
-		t.Fatal("normalizeNodeName should reject newlines")
-	}
-}
-
 func TestSupportsDistro(t *testing.T) {
 	t.Parallel()
 
