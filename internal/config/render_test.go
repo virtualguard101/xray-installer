@@ -53,6 +53,8 @@ func TestRenderFlClash(t *testing.T) {
 	for _, want := range []string{
 		`server: "xx.example.com"`,
 		`name: "测试节点 \"A\""`,
+		`proxies: ["测试节点 \"A\"", 自建/家宽节点, 全部节点, CK 自用订阅请勿分享外泄]`,
+		`{name: 自建/家宽节点, type: select, proxies: ["测试节点 \"A\"", 全球直连]`,
 		`uuid: "12345678-1234-1234-1234-1234567890ab"`,
 		`public-key: "public-key"`,
 		`short-id: "0123456789abcdef"`,
